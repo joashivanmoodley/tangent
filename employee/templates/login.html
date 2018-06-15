@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} Tangent Solutions - Login{% endblock %}
+
+{% block content %}
+<form action="{% url 'login' %}" method="POST">
+{% csrf_token %}
+  <div class="imgcontainer">
+    <img src="/assets/tangent-logo.png" alt="tangent solutions" class="avatar">
+  </div>
+
+  <div class="container">
+    <label for="uname"><b>Username</b></label>
+
+    {{ form.username }}
+
+    <label for="psw"><b>Password</b></label>
+    {{ form.password }}
+        
+    <button type="submit">Login</button>
+  </div>
+</form>
+
+{% endblock %}

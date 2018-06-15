@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Tangent Solutions - Summary{% endblock %}
+
+{% block content %}
+  <a class="btn btn-primary mb-2" href="/employee/summary/">Back</a>
+
+<div class="container">
+ <form class="form-horizontal">
+ <div class="form-group">
+   <label class="control-label col-sm-6" for="text">Details For {{data.user.first_name}} {{data.user.last_name}}</label>          
+
+ </div>
+ <div class="form-group">
+     <label class="control-label col-sm-2" for="text">Basic Information</label>         
+   </div>
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="text">First Name:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.user.first_name}}" readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Last Name:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="text" placeholder="{{data.user.last_name}}" readonly>
+    </div>
+    <label class="control-label col-sm-2" for="email">Age:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="number" placeholder="{{data.age}}" readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Date Of Birth:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.birth_date}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">ID Number:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.id_number}}"  readonly>
+    </div>
+  </div>
+  <div class="form-group">
+  
+    <label class="control-label col-sm-2" for="text">Gender:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{% if data.gender == 'M' %} Male {% else %}Female{% endif %}"  readonly>
+    </div>
+     <label class="control-label col-sm-2" for="text">Race:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{% if data.race == 'B' %} Black African{% elif data.race == 'C' %}Coloured {% elif data.race == 'I' %}Indian or Asian{% elif data.race == 'W' %}White{% else %}None Dominant{% endif %}"  readonly>
+    </div>
+  </div>
+  <div class="form-group">
+     <label class="control-label col-sm-2" for="text">Contact Information</label>         
+  </div>
+  <div class="form-group">
+  
+    <label class="control-label col-sm-2" for="text">Phone Number:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.phone_number}}"  readonly>
+    </div>
+     <label class="control-label col-sm-2" for="text">Work Email Address:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.email}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Private Email Address:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.personal_email}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Physical Address:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.physical_address|safe}}"  readonly>
+    </div>
+  </div>
+   <div class="form-group">
+     <label class="control-label col-sm-2" for="text">Work Information</label>         
+   </div>
+    <div class="form-group">
+  
+    <label class="control-label col-sm-2" for="text">Position:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.position.name}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Start Date:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.start_date}}"  readonly>
+    </div>
+     <label class="control-label col-sm-2" for="text">Level:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.position.level}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Leave Remaining:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.leave_remaining}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Tax Number:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.tax_number}}"  readonly>
+    </div>
+    
+      <div class="form-group">
+     <label class="control-label col-sm-2" for="text">Review Information</label>         
+   </div>
+    {% for d in data.employee_review %}
+    <label class="control-label col-sm-2" for="text">date:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{d.date}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">salary:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{d.salary}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">type:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{% if d.type == 'P' %} Performance Increase{% elif  d.type == 'A' %}Annual Increase{% elif  d.type == 'S' %}Starting Salary{% elif  d.type == 'E' %}Expectation Review{% endif %}"  readonly>
+    </div>
+    <div class="form-group"></div>
+    {% endfor %}
+    <label class="control-label col-sm-2" for="text">Next Review:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{data.next_review}}"  readonly>
+    </div>
+  </div>
+  <div class="form-group">
+     <label class="control-label col-sm-2" for="text">Next Of Kin Information</label>         
+   </div>
+   {% for d in data.employee_next_of_kin %}
+    <div class="form-group">
+  
+    <label class="control-label col-sm-2" for="text">Name:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{d.name}}"  readonly>
+    </div>
+     <label class="control-label col-sm-2" for="text">Relationship:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{d.relationship}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Phone Number:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{d.phone_number}}"  readonly>
+    </div>
+     <label class="control-label col-sm-2" for="text">Email:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{d.email}}"  readonly>
+    </div>
+    <label class="control-label col-sm-2" for="text">Physical Address:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control"  placeholder="{{d.physical_address|safe}}"  readonly>
+    </div>
+  </div>
+  {% endfor %}
+</form> 
+</div>
+  <a class="btn btn-primary mb-2" href="/employee/summary/">Back</a>
+
+
+{% endblock %}
