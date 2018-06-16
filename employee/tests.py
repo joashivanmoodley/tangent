@@ -22,7 +22,7 @@ class Test(TestCase):
     def test_auth_success(self):
         '''
         User comes to the home page tries to Login
-        User enters the correct login details and is then redirected to the summary page.
+        User enters the correct login details and is then redirected to the dashboard page.
         '''
         request = self.factory.get(resolve('/'))
         response = Login.as_view()(request)
@@ -34,7 +34,7 @@ class Test(TestCase):
         request = self.factory.post(resolve('/'), data)
         request.session = self.client.session
         response = Login.as_view()(request)
-        self.assertEqual(response.url, '/employee/summary/')
+        self.assertEqual(response.url, '/employee/dashboard/')
 
     def test_auth_fail(self):
         '''

@@ -2,11 +2,11 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from employee.forms import LoginForm
 from employee.functions import get_auth_token
 from django.views.generic import View
 from django.conf import settings
+from datetime import datetime
 
 import requests
 
@@ -30,7 +30,7 @@ class Login(View):
             if auth_token:
                 request.session['authenticated'] = True
                 request.session['auth_token'] = auth_token
-                return redirect('employee_summary')
+                return redirect('employee_dashboard')
             else:
                 if 'authenticated' in request.session:
                     del request.session['authenticated']
@@ -82,13 +82,12 @@ def summary(request):
                 url = url + 'email__contains=%s' % email
             else:
                 url = url + '&email__contains=%s' % email
-
+    print url
     r = requests.get(
         '%s/api/employee/%s' % (settings.API_BASE_POINT, url),
         headers=HEADERS
     )
     if r.status_code == 200:
-        print r.json()
         template_vars['data'] = r.json()
 
     return render(request, template, template_vars)
@@ -142,3 +141,96 @@ def logout(request):
     if 'auth_token' in request.session:
         del request.session['auth_token']
     return redirect('login')
+
+
+def employee_dashboard(request):
+    template = 'employee_dashboard.html'
+    template_vars = {}
+    data = None
+    if 'authenticated' not in request.session or 'auth_token' not in request.session:
+        return redirect('login')
+
+    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token'],}
+    r = requests.get(
+        '%s/api/employee/' % (settings.API_BASE_POINT),
+        headers=HEADERS
+    )
+    if r.status_code == 200:
+        data = r.json()
+    total_employees = len(data)
+    position_data = []
+    birthdays_this_month = 0
+    for d in data:
+        position_data.append(d['position'])
+        user_birthday_month = datetime.strptime(d['birth_date'], '%Y-%m-%d').month
+        if user_birthday_month == datetime.now().month:
+            birthdays_this_month = birthdays_this_month + 1
+    template_vars['total_employees'] = total_employees
+    template_vars['birthdays_this_month'] = birthdays_this_month
+    template_vars['position_data'] = position_data
+    template_vars['month'] = datetime.now().month
+    return render(request, template, template_vars)
+
+
+def birthday(request, month):
+    template = 'birthday.html'
+    template_vars = {}
+    data = None
+    if 'authenticated' not in request.session or 'auth_token' not in request.session:
+        return redirect('login')
+
+    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token'],}
+    r = requests.get(
+        '%s/api/employee/?birth_date_range=3' % (settings.API_BASE_POINT),
+        headers=HEADERS
+    )
+    if r.status_code == 200:
+        data = r.json()
+    template_vars['data'] = data
+    return render(request, template, template_vars)
+
+
+def review(request):
+    template = 'review.html'
+    template_vars = {}
+    data = None
+    if 'authenticated' not in request.session or 'auth_token' not in request.session:
+        return redirect('login')
+
+    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token'],}
+    r = requests.get(
+        '%s/api/review/' % (settings.API_BASE_POINT),
+        headers=HEADERS
+    )
+    if r.status_code == 200:
+        data = r.json()
+    template_vars['data'] = data
+    return render(request, template, template_vars)
+
+
+def position(request):
+    template = 'position.html'
+    template_vars = {}
+    data = None
+    if 'authenticated' not in request.session or 'auth_token' not in request.session:
+        return redirect('login')
+
+    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token'],}
+    r = requests.get(
+        '%s/api/employee/' % (settings.API_BASE_POINT),
+        headers=HEADERS
+    )
+    if r.status_code == 200:
+        data = r.json()
+    total_employees = len(data)
+    position_data = []
+
+    for d in data:
+        d['position']['name']
+        d['position']['level']
+
+    print position_data
+    template_vars['total_employees'] = total_employees
+    template_vars['position_data'] = position_data
+    template_vars['month'] = datetime.now().month
+    return render(request, template, template_vars)

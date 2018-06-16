@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} Tangent Solutions - Employee Stats{% endblock %}
+
+{% block content %}
+{% include "search_bar.html" %}
+
+<div class="container dynamicTile">
+<div class="row ">
+    <div class="col-sm-3 col-xs-12">
+      <div id="tile1" class="tile">
+        <img src="/assets/employee.jpg" class="img-responsive"/>
+         <a href="/employee/summary/"><h2>View All {{total_employees}} Employee(s):  </h2></a>
+         
+      </div>
+  </div>
+  <div class="col-sm-3 col-xs-7">
+    <div id="tile2" class="tile">
+       <img src="/assets/birthday.jpg" class="img-responsive"/>
+         <a href="{% if total_birthdays_this_month > 0 %}/employee/birthday/{% now 'm' %}{% else %}#{%  endif %}"><h2>Birthdays This Month: {{birthdays_this_month}} </h2></a>
+         
+    </div>
+  </div>
+  <div class="col-sm-3 col-xs-8">
+    <div id="tile2" class="tile">
+       <img src="/assets/review.jpg" class="img-responsive"/>
+         <a href="/employee/review/"><h2>View My Salary Review information:</h2></a>
+         
+    </div>
+  </div>
+  <div class="col-sm-3 col-xs-8">
+    <div id="tile2" class="tile">
+       <img src="/assets/position.png" class="img-responsive"/>
+        <a href="/employee/position/"> <h2>Position Information: {{total_employees}} </h2></a>
+         
+    </div>
+  </div>
+</div>
+{% endblock %}
