@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^details/(?P<id>(\d|-)+)/$', details, name='details'),
     url(r'^details/$', details, name='details'),
     url(r'^employee/dashboard/$', employee_dashboard, name='employee_dashboard'),
-    url(r'^employee/birthday/(?P<month>(\d|-)+)/$', birthday, name='birthday'),
+    url(r'^employee/birthday/$', birthday, name='birthday'),
     url(r'^employee/review/$', review, name='review'),
     url(r'^employee/position/$', position, name='position'),
 

@@ -6,7 +6,7 @@
 {% block content %}
 
 <div class="container">
-   <h2>Position Information</h2> 
+   <h2>Total Employees {{total_employees}}</h2> 
    {% include "search_bar.html" %}
  
   <table class="table table-striped">
@@ -18,15 +18,19 @@
       </tr>
     </thead>
     <tbody>
-    {% for d in data %}
+    {% for k, v in position_data.items %}
       <tr>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>{{k}}</td>
+        {% for i,j in v.items %}
+        <td>{% if i == 'Junior' %}{{j}}{% endif %}</td>
+        <td>{% if i == 'Senior' %}{{j}}{% endif %}</td>
+        {% endfor %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
+     <a class="btn btn-primary mb-2" href="/employee/dashboard/">Back</a>
+
 </div>
 
 

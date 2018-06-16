@@ -82,7 +82,7 @@ def summary(request):
                 url = url + 'email__contains=%s' % email
             else:
                 url = url + '&email__contains=%s' % email
-    print url
+
     r = requests.get(
         '%s/api/employee/%s' % (settings.API_BASE_POINT, url),
         headers=HEADERS
@@ -99,7 +99,7 @@ def details(request, id=None):
     '''
     full_profile = False
     data = None
-    # Checks if User is authenticated by checkinf for a session var set on successful login
+    # Checks if User is authenticated by checking for a session var set on successful login
     if 'authenticated' not in request.session or 'auth_token' not in request.session:
         return redirect('login')
 
@@ -172,7 +172,7 @@ def employee_dashboard(request):
     return render(request, template, template_vars)
 
 
-def birthday(request, month):
+def birthday(request):
     template = 'birthday.html'
     template_vars = {}
     data = None
@@ -223,13 +223,24 @@ def position(request):
     if r.status_code == 200:
         data = r.json()
     total_employees = len(data)
-    position_data = []
-
+    position_data = {}
     for d in data:
-        d['position']['name']
-        d['position']['level']
+        # gets a list of positions and their respective counts
+        if d['position']['name'] not in position_data.keys():
+            if d['position']['level'] == 'Junior':
+                position_data.update({
+                    d['position']['name']: {d['position']['level']: 1, 'Senior': 0}
+                })
+            else:
+                position_data.update({
+                    d['position']['name']: {d['position']['level']: 1, 'Junior': 0}
+                })
+        else:
+            if d['position']['level'] not in position_data[d['position']['name']].keys():
+                position_data[d['position']['name']][d['position']['level']] = 1
+            else:
+                position_data[d['position']['name']][d['position']['level']] += 1
 
-    print position_data
     template_vars['total_employees'] = total_employees
     template_vars['position_data'] = position_data
     template_vars['month'] = datetime.now().month
