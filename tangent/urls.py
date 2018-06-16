@@ -13,27 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.conf import settings
-from django.contrib import admin
 from django.views.static import serve
 
-from employee.views import Login, summary, logout, details
-from employee.views import review, employee_dashboard, birthday, position
+from employee.views import Login, logout
 from employee.ajax import search_filter
+from employee import urls as employee_urls
+
+
 urlpatterns = [
     url(r'^$', Login.as_view(), name='login'),
     url(r'^logout/$', logout, name='logout'),
     url(r'^ajax/employee-search/$', search_filter, name='search_filter'),
-    url(r'^employee/summary/$', summary, name='employee_summary'),
-    url(r'^details/(?P<id>(\d|-)+)/$', details, name='details'),
-    url(r'^details/$', details, name='details'),
-    url(r'^employee/dashboard/$', employee_dashboard, name='employee_dashboard'),
-    url(r'^employee/birthday/$', birthday, name='birthday'),
-    url(r'^employee/review/$', review, name='review'),
-    url(r'^employee/position/$', position, name='position'),
-
-
-    url(r'^admin/', admin.site.urls),
+    url(r'^employee/', include(employee_urls)),
     url(r'^assets/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
