@@ -74,11 +74,8 @@ WSGI_APPLICATION = 'tangent.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tangent',
-        'USER': 'joash',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': path.join(CURRENT_DIRECTORY, 'db.sqlite3'),
     }
 }
 
