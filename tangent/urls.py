@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.conf import settings
 from django.views.static import serve
+from django.views.generic.base import RedirectView
 
 from employee.views import Login, logout
 from employee.ajax import search_filter
@@ -28,4 +29,7 @@ urlpatterns = [
     url(r'^ajax/employee-search/$', search_filter, name='search_filter'),
     url(r'^employee/', include(employee_urls)),
     url(r'^assets/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    url(
+        r'^fonts/glyphicons-halflings-regular.woff2',
+        RedirectView.as_view(url='/assets/fonts/glyphicons-halflings-regular.woff2', permanent=True)),
 ]

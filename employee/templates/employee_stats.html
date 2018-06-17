@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Tangent Solutions - Employee Status {% endblock %}
+
+{% block content %}
+
+<div class="container">
+   <h2> Stats For {{total_employees}} Employees</h2> 
+   {% include "search_bar.html" %}
+ 
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>No. Of Juniors Employeed</th>
+        <th>No. Of Seniors Employeed</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for k, v in position_data.items %}
+      <tr>
+        <td>{{k}}</td>
+        {% for i,j in v.items %}
+        {% if i == 'Junior' %}<td>{{j}}</td>{% endif %}
+        {% if i == 'Senior' %}<td>{{j}}</td>{% endif %}
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>No. Of Males Employed</th>
+        <th>No. Of Females Employed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{gender_data.male}}</td>
+        <td>{{gender_data.female}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>No. Of Black Employees</th>
+        <th>No. Of Coloured Employees</th>
+        <th>No. Of Indian or Asian Employees</th>
+        <th>No. Of White Employees</th>
+        <th>No. Of None Dominant Employees</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{race_data.B}}</td>
+        <td>{{race_data.C}}</td>
+        <td>{{race_data.I}}</td>
+        <td>{{race_data.W}}</td>
+        <td>{{race_data.N}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Most Recent Employed</th>
+        <th>Longest Employed</th>
+        <th>Youngest Employee</th>
+        <th>Oldest Employee</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td><a href="/employee/details/{{employee_data.most_recent.id}}">{{employee_data.most_recent.name}} has been employeed for {{employee_data.most_recent.value}} yr(s)</a></td>
+        <td><a href="/employee/details/{{employee_data.longest.id}}">{{employee_data.longest.name}} has been employeed for {{employee_data.longest.value}} yr(s)</a></td>
+       <td> <a href="/employee/details/{{employee_data.youngest.id}}">{{employee_data.youngest.name}} is {{employee_data.youngest.value}} yrs old</a></td>
+        <td><a href="/employee/details/{employee_data.{oldest.id}}">{{employee_data.oldest.name}}  is {{employee_data.oldest.value}} yrs old</a></td>
+      </tr>
+    </tbody>
+  </table>
+     <a class="btn btn-primary mb-2" href="/employee/dashboard/">Back</a>
+
+</div>
+
+
+{% endblock %}

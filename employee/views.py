@@ -215,15 +215,16 @@ class ReviewView(View):
 review = login_check(ReviewView.as_view())
 
 
-class PositionView(View):
+class EmployeeStatsView(View):
     '''
     Displays company position info.
     '''
     template_vars = {}
     data = None
-    position_data = {}
 
     def get(self, request, *args, **kwargs):
+        self.position_data = {}
+        self.gender_data = {'male': 0, 'female': 0}
         HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
         r = requests.get(
             '%s/api/employee/' % (settings.API_BASE_POINT),
@@ -234,7 +235,43 @@ class PositionView(View):
 
         total_employees = len(self.data)
         self.template_vars['data'] = self.data
+        self.race_data = {'B': 0, 'C': 0, 'I': 0, 'W': 0, 'N': 0}
+        self.employee_data = {
+            'most_recent':  {'name': '', 'value': 0, 'id': None},
+            'longest':  {'name': '', 'value': 0, 'id': None},
+            'youngest':  {'name': '', 'value': 0, 'id': None},
+            'oldest':  {'name': '', 'value': 0, 'id': None},
+        }
+
         for d in self.data:
+
+            if d['gender'] == 'M':
+                self.gender_data['male'] += 1
+            else:
+                self.gender_data['female'] += 1
+
+            self.race_data[d['race']] += 1
+
+            if d['years_worked'] > self.employee_data['longest']['value'] or self.employee_data['longest']['value'] == 0:
+                self.employee_data['longest']['name'] = '%s %s' % (d['user']['first_name'], d['user']['last_name'])
+                self.employee_data['longest']['value'] = d['years_worked']
+                self.employee_data['longest']['id'] = d['user']['id']
+
+            if d['years_worked'] < self.employee_data['most_recent']['value'] or self.employee_data['most_recent']['value'] == 0:
+                self.employee_data['most_recent']['name'] = '%s %s' % (d['user']['first_name'], d['user']['last_name'])
+                self.employee_data['most_recent']['value'] = d['years_worked']
+                self.employee_data['most_recent']['id'] = d['user']['id']
+
+            if d['age'] < self.employee_data['youngest']['value'] or self.employee_data['youngest']['value'] == 0:
+                self.employee_data['youngest']['name'] = '%s %s' % (d['user']['first_name'], d['user']['last_name'])
+                self.employee_data['youngest']['value'] = d['age']
+                self.employee_data['youngest']['id'] = d['user']['id']
+
+            if d['age'] > self.employee_data['oldest']['value'] or self.employee_data['oldest']['value'] == 0:
+                self.employee_data['oldest']['name'] = '%s %s' % (d['user']['first_name'], d['user']['last_name'])
+                self.employee_data['oldest']['value'] = d['age']
+                self.employee_data['oldest']['id'] = d['user']['id']
+
             # gets a list of positions and their respective counts
             if d['position']['name'] not in self.position_data.keys():
                 if d['position']['level'] == 'Junior':
@@ -250,11 +287,12 @@ class PositionView(View):
                     self.position_data[d['position']['name']][d['position']['level']] = 1
                 else:
                     self.position_data[d['position']['name']][d['position']['level']] += 1
-
+        self.template_vars['gender_data'] = self.gender_data
         self.template_vars['total_employees'] = total_employees
         self.template_vars['position_data'] = self.position_data
+        self.template_vars['race_data'] = self.race_data
         self.template_vars['month'] = datetime.now().month
+        self.template_vars['employee_data'] = self.employee_data
+        return render(request, 'employee_stats.html', self.template_vars)
 
-        return render(request, 'position.html', self.template_vars)
-
-position = login_check(PositionView.as_view())
+employee_stats = login_check(EmployeeStatsView.as_view())

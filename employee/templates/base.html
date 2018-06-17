@@ -82,7 +82,7 @@ span.psw {
  <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Tangent Solutions</a>
+      <a class="navbar-brand" href="/employee/dashboard">Tangent Solutions</a>
     </div>
     <ul class="nav navbar-nav">
     {%if 'authenticated' in request.session %}
@@ -93,7 +93,7 @@ span.psw {
     </ul>
     <ul class="nav navbar-nav navbar-right">
        {%if 'authenticated' not in request.session %}
-      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <li><a href="#"><span class="glyphicon glyphicon-login"></span> Login</a></li>
       {% else %}
             <li><a href="/employee/details/"><span class="glyphicon glyphicon-sign-up"></span> View My Account</a></li>
             <li><a href="/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
