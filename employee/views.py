@@ -15,10 +15,12 @@ class Login(View):
     '''
     Home Page Prompting the user for login details
     '''
+    template_vars = {}
+
     def get(self, request, *args, **kwargs):
         form = LoginForm()
-        template_vars = {'form': form}
-        return render(request, 'login.html', template_vars)
+        self.template_vars['form'] = form
+        return render(request, 'login.html', self.template_vars)
 
     def post(self, request, *args, **kwargs):
 
@@ -30,12 +32,15 @@ class Login(View):
             if auth_token:
                 request.session['authenticated'] = True
                 request.session['auth_token'] = auth_token
+                if 'invalid_login' in request.session:
+                    del request.session['invalid_login']
                 return redirect('employee_dashboard')
             else:
                 if 'authenticated' in request.session:
                     del request.session['authenticated']
                 if 'auth_token' in request.session:
                     del request.session['auth_token']
+                request.session['invalid_login'] = True
             return redirect('login')
 
 
@@ -214,7 +219,6 @@ class PositionView(View):
     '''
     Displays company position info.
     '''
-
     template_vars = {}
     data = None
     position_data = {}
