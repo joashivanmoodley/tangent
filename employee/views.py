@@ -39,70 +39,83 @@ class Login(View):
             return redirect('login')
 
 
-@login_check
-def summary(request):
+class SummaryView(View):
     '''
-    Summary view displaying all employee info
+    This view is designed to display all employee data
     '''
-    template = 'summary.html'
     template_vars = {}
     url = ''
-    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
 
-    if request.POST:
-        url = set_search_url(request)
+    def get(self, request, *args, **kwargs):
+        HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
+        r = requests.get(
+            '%s/api/employee/' % (settings.API_BASE_POINT),
+            headers=HEADERS
+        )
+        if r.status_code == 200:
+            self.template_vars['data'] = r.json()
+        return render(request, 'summary.html', self.template_vars)
 
-    r = requests.get(
-        '%s/api/employee/%s' % (settings.API_BASE_POINT, url),
-        headers=HEADERS
-    )
-    if r.status_code == 200:
-        template_vars['data'] = r.json()
+    def post(self, request, *args, **kwargs):
+        # this handles the search for employees
+        self.url = set_search_url(request)
+        HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
 
-    return render(request, template, template_vars)
+        if request.POST:
+            url = set_search_url(request)
+
+        r = requests.get(
+            '%s/api/employee/%s' % (settings.API_BASE_POINT, url),
+            headers=HEADERS
+        )
+        if r.status_code == 200:
+            self.template_vars['data'] = r.json()
+        return render(request, 'summary.html', self.template_vars)
+
+summary = login_check(SummaryView.as_view())
 
 
-@login_check
-def details(request, id=None):
+class DetailsView(View):
     '''
-    details view for a specific user.
+    Details view of employee it. If theres an id in kwargs then its for another user.
+    If there is not an id in kwargs then the logined users details will be displayed.
     '''
+
     full_profile = False
     data = None
     template_vars = {}
-    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
 
-    if not id:
-        url = '%s/api/employee/me/' % (settings.API_BASE_POINT)
-        r = requests.get(
-            url,
-            headers=HEADERS
-        )
-        full_profile = True
-        if r.status_code == 200:
-            data = r.json()
-    else:
-
-        url = '%s/api/employee/?user=%s' % (settings.API_BASE_POINT, id)
-        r = requests.get(
-            url,
-            headers=HEADERS
-        )
-        if r.status_code == 200:
-            data = r.json()[0]
+    def get(self, request, *args, **kwargs):
+        HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
+        if 'id' not in kwargs:
+            url = '%s/api/employee/me/' % (settings.API_BASE_POINT)
+            r = requests.get(
+                url,
+                headers=HEADERS
+            )
+            self.full_profile = True
+            if r.status_code == 200:
+                self.data = r.json()
         else:
-            return redirect('summary')
 
-    template_vars['data'] = data
+            url = '%s/api/employee/?user=%s' % (settings.API_BASE_POINT, kwargs['id'])
+            r = requests.get(
+                url,
+                headers=HEADERS
+            )
+            if r.status_code == 200:
+                self.data = r.json()[0]
+            else:
+                return redirect('summary')
+        if 'id_number' not in self.data or not self.full_profile:
+            self.template = 'details.html'
+        else:
+            self.template = 'super_user_details.html'
 
-    if 'id_number' not in data or not full_profile:
-        template = 'details.html'
-    else:
-        template = 'super_user_details.html'
+        self.template_vars['data'] = self.data
+        return render(request, self.template, self.template_vars)
 
-    template_vars['full_profile'] = full_profile
-
-    return render(request, template, template_vars)
+details = login_check(DetailsView.as_view())
 
 
 def logout(request):
@@ -114,118 +127,130 @@ def logout(request):
     return redirect('login')
 
 
-@login_check
-def employee_dashboard(request):
+class EmployeeDashView(View):
+    '''
+    This is the first view the user is directed to after login, and displays some basic stats
+    '''
 
-    template = 'employee_dashboard.html'
     template_vars = {}
     data = None
     position_data = []
     birthdays_this_month = 0
 
-    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
-    r = requests.get(
-        '%s/api/employee/' % (settings.API_BASE_POINT),
-        headers=HEADERS
-    )
+    def get(self, request, *args, **kwargs):
+        HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
+        r = requests.get(
+            '%s/api/employee/' % (settings.API_BASE_POINT),
+            headers=HEADERS
+        )
 
-    if r.status_code == 200:
-        data = r.json()
-    total_employees = len(data)
+        if r.status_code == 200:
+            self.data = r.json()
+        total_employees = len(self.data)
 
-    for d in data:
-        position_data.append(d['position'])
-        user_birthday_month = datetime.strptime(d['birth_date'], '%Y-%m-%d').month
-        if user_birthday_month == datetime.now().month:
-            birthdays_this_month = birthdays_this_month + 1
+        for d in self.data:
+            self.position_data.append(d['position'])
+            user_birthday_month = datetime.strptime(d['birth_date'], '%Y-%m-%d').month
+            if user_birthday_month == datetime.now().month:
+                self.birthdays_this_month = self.birthdays_this_month + 1
 
-    template_vars['total_employees'] = total_employees
-    template_vars['birthdays_this_month'] = birthdays_this_month
-    template_vars['position_data'] = position_data
-    template_vars['month'] = datetime.now().month
+        self.template_vars['total_employees'] = total_employees
+        self.template_vars['birthdays_this_month'] = self.birthdays_this_month
+        self.template_vars['position_data'] = self.position_data
+        self.template_vars['month'] = datetime.now().month
+        return render(request, 'employee_dashboard.html', self.template_vars)
 
-    return render(request, template, template_vars)
+employee_dashboard = login_check(EmployeeDashView.as_view())
 
 
-@login_check
-def birthday(request):
+class BirthdayView(View):
+    '''
+    Displays info of birthdays in the month.
+    '''
 
-    template = 'birthday.html'
     template_vars = {}
     data = None
 
-    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
-    r = requests.get(
-        '%s/api/employee/?birth_date_range=3' % (settings.API_BASE_POINT),
-        headers=HEADERS
-    )
+    def get(self, request, *args, **kwargs):
+        HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
+        r = requests.get(
+            '%s/api/employee/?birth_date_range=3' % (settings.API_BASE_POINT),
+            headers=HEADERS
+        )
 
-    if r.status_code == 200:
-        data = r.json()
+        if r.status_code == 200:
+            self.data = r.json()
 
-    template_vars['data'] = data
+        self.template_vars['data'] = self.data
+        return render(request, 'birthday.html', self.template_vars)
 
-    return render(request, template, template_vars)
+birthday = login_check(BirthdayView.as_view())
 
 
-@login_check
-def review(request):
-
-    template = 'review.html'
+class ReviewView(View):
+    '''
+    Displays info of logined users reviews.
+    '''
     template_vars = {}
     data = None
 
-    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
-    r = requests.get(
-        '%s/api/review/' % (settings.API_BASE_POINT),
-        headers=HEADERS
-    )
+    def get(self, request, *args, **kwargs):
+        HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
+        r = requests.get(
+            '%s/api/review/' % (settings.API_BASE_POINT),
+            headers=HEADERS
+        )
 
-    if r.status_code == 200:
-        data = r.json()
+        if r.status_code == 200:
+            self.data = r.json()
 
-    template_vars['data'] = data
+        self.template_vars['data'] = self.data
+        return render(request, 'review.html', self.template_vars)
 
-    return render(request, template, template_vars)
+review = login_check(ReviewView.as_view())
 
 
-@login_check
-def position(request):
+class PositionView(View):
+    '''
+    Displays company position info.
+    '''
 
-    template = 'position.html'
     template_vars = {}
     data = None
     position_data = {}
 
-    HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
-    r = requests.get(
-        '%s/api/employee/' % (settings.API_BASE_POINT),
-        headers=HEADERS
-    )
-    if r.status_code == 200:
-        data = r.json()
+    def get(self, request, *args, **kwargs):
+        HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
+        r = requests.get(
+            '%s/api/employee/' % (settings.API_BASE_POINT),
+            headers=HEADERS
+        )
+        if r.status_code == 200:
+            self.data = r.json()
 
-    total_employees = len(data)
-
-    for d in data:
-        # gets a list of positions and their respective counts
-        if d['position']['name'] not in position_data.keys():
-            if d['position']['level'] == 'Junior':
-                position_data.update({
-                    d['position']['name']: {d['position']['level']: 1, 'Senior': 0}
-                })
+        total_employees = len(self.data)
+        self.template_vars['data'] = self.data
+        for d in self.data:
+            # gets a list of positions and their respective counts
+            if d['position']['name'] not in self.position_data.keys():
+                if d['position']['level'] == 'Junior':
+                    self.position_data.update({
+                        d['position']['name']: {d['position']['level']: 1, 'Senior': 0}
+                    })
+                else:
+                    self.position_data.update({
+                        d['position']['name']: {d['position']['level']: 1, 'Junior': 0}
+                    })
             else:
-                position_data.update({
-                    d['position']['name']: {d['position']['level']: 1, 'Junior': 0}
-                })
-        else:
-            if d['position']['level'] not in position_data[d['position']['name']].keys():
-                position_data[d['position']['name']][d['position']['level']] = 1
-            else:
-                position_data[d['position']['name']][d['position']['level']] += 1
+                if d['position']['level'] not in self.position_data[d['position']['name']].keys():
+                    self.position_data[d['position']['name']][d['position']['level']] = 1
+                else:
+                    self.position_data[d['position']['name']][d['position']['level']] += 1
 
-    template_vars['total_employees'] = total_employees
-    template_vars['position_data'] = position_data
-    template_vars['month'] = datetime.now().month
+        self.template_vars['total_employees'] = total_employees
+        self.template_vars['position_data'] = self.position_data
+        self.template_vars['month'] = datetime.now().month
 
-    return render(request, template, template_vars)
+        return render(request, 'position.html', self.template_vars)
+
+position = login_check(PositionView.as_view())
