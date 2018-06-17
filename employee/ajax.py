@@ -5,6 +5,10 @@ import json
 
 
 def search_filter(request):
+    '''
+    Populates the search bar dropdowns
+    '''
+
     data = None
     position_data = []
     positions_added = []
@@ -28,7 +32,10 @@ def search_filter(request):
                 'name': d['position']['name']
             })
             positions_added.append(d['position']['id'])
-        user_data.append({'id': d['user']['id'], 'name': '%s %s' % (d['user']['first_name'], d['user']['last_name'])})
+        user_data.append({
+            'id': d['user']['id'],
+            'name': '%s %s' % (d['user']['first_name'], d['user']['last_name'])
+        })
 
     search_data.append({
         'position': position_data,

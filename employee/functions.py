@@ -5,6 +5,9 @@ import requests
 
 
 def get_auth_token(username, password):
+    '''
+    Gets authentication token needed to poll the api
+    '''
     r = requests.post(
         '%s/api-token-auth/' % settings.API_BASE_POINT,
         data={
@@ -18,6 +21,10 @@ def get_auth_token(username, password):
 
 
 def set_search_url(request):
+    '''
+    builds the url string to used to search for users
+    '''
+
     url = '?'
     gender = request.POST.get('gender', None)
     race = request.POST.get('race', None)
@@ -54,6 +61,9 @@ def set_search_url(request):
 
 
 def login_check(function):
+    '''
+    custom decorator to handle custom authentication
+    '''
     def wrap(request, *args, **kwargs):
         if 'authenticated' not in request.session or 'auth_token' not in request.session:
             return redirect('login')
