@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.conf import settings
 import requests
 import json
+from django.template import RequestContext, loader
+
 
 
 def search_filter(request):
@@ -54,7 +56,24 @@ def request_download(request):
         email = request.POST.get('email', None)
 
         if section and download_type and email:
-            requests.post('http://localhost:8002/process-pdf/', data={'download_type': download_type, 'email': email})
-            return HttpResponse("success")
+            HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
+            r = requests.get(
+                '%s/api/employee/' % (settings.API_BASE_POINT),
+                headers=HEADERS
+            )
+            if r.status_code == 200:
+                data = r.json()
+                template = loader.get_template('emails/email_summary.html')
+                html = template.render({'data': data})
+                r = requests.post(
+                    'http://localhost:8002/process-pdf/',
+                    data={
+                        'download_type': download_type,
+                        'email': email,
+                        'html': html
+                    }
+                )
+                if r.status_code == 200:
+                    return HttpResponse(r.json()['status'])
 
     return HttpResponse("here")
