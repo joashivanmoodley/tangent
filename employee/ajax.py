@@ -66,7 +66,7 @@ def request_download(request):
                 template = loader.get_template('emails/email_summary.html')
                 html = template.render({'data': data})
                 r = requests.post(
-                    'http://localhost:8002/process-pdf/',
+                    '%s/process-pdf/' % settings.PDF_XLS_SERVICE_URL,
                     data={
                         'download_type': download_type,
                         'email': email,
