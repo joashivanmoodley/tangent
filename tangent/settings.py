@@ -21,7 +21,7 @@ CURRENT_DIRECTORY = path.abspath(path.join(path.dirname(__file__)))
 SECRET_KEY = 'd-uh7!4s_q*pun*odh2q^f*7-_z9r5@^79_c-l_q0n)!tximm+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 if not DEBUG:
     ALLOWED_HOSTS = ['*.tangent.moodtechsystems.co.za']
 else:

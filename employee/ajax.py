@@ -42,3 +42,19 @@ def search_filter(request):
         'user_data': user_data
     })
     return HttpResponse(json.dumps(search_data))
+
+
+def request_download(request):
+    '''
+    Sends data to micoservice to process.
+    '''
+    if request.POST:
+        section = request.POST.get('section', None)
+        download_type = request.POST.get('download_type', None)
+        email = request.POST.get('email', None)
+
+        if section and download_type and email:
+            requests.post('http://localhost:8002/process-pdf/', data={'download_type': download_type, 'email': email})
+            return HttpResponse("success")
+
+    return HttpResponse("here")
