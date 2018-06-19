@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Tangent Solutions - Summary{% endblock %}
+{% block title %} Tangent Solutions - Employee Stats{% endblock %}
 
 {% block content %}
-{% include "search_bar.html" %}
-   
-<div class="container">
- <form class="form-horizontal">
+
+<div class="main">
+  <div class="main-inner">
+    <div class="container">
+      <div class="row">
+       <div class="span12">
+      {% include "search_bar.html" %}
+      </div>
+        <div class="span12">
+          <form class="form-horizontal">
  <div class="form-group">
    <label class="control-label col-sm-6" for="text">Details For {{data.user.first_name}} {{data.user.last_name}}</label>          
 
@@ -148,8 +154,19 @@
   </div>
   {% endfor %}
 </form> 
-</div>
   <a class="btn btn-primary mb-2" href="/employee/summary/">Back</a>
+
+        </div>
+        
+      </div>
+      <!-- /row --> 
+    </div>
+    <!-- /container --> 
+  </div>
+  <!-- /main-inner --> 
+</div>
+<!-- /main -->
 
 
 {% endblock %}
+

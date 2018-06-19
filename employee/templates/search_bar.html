@@ -30,29 +30,3 @@
      <button type="submit" class="btn btn-default form-control">Submit</button>
      <button onclick="window.location" class="btn btn-default form-control">reset</button>
 </form> 
-<script type="text/javascript">
-  $(document).ready(function(){
-        $.ajax({
-         type: 'GET',
-         url: '/ajax/employee-search/',
-         dataType: 'json',
-         success: function (data) {
-            $("#id_position").empty();
-            $('#id_position').append('<option data-tokens="" value=""> Select Position</option>')
-            $("#id_user").empty();
-            $('#id_user').append('<option data-tokens="" value=""> Select User</option>')
-            for (d in data){
-                var position = data[d]['position']
-                var user_data = data[d]['user_data']
-                for (p in position){
-                $('#id_position').append('<option value=' + position[p].id + '>'+ position[p].name +'</option>')
-                }
-                for (u in user_data){
-                $('#id_user').append('<option value=' + user_data[u].id + '>'+ user_data[u].name +'</option>')
-                }
-            }
-         },
-       });
-
-});
-</script>

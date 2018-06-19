@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Tangent Solutions - Employee Status {% endblock %}
+{% block title %} Tangent Solutions - Employee Stats{% endblock %}
 
 {% block content %}
 
-<div class="container">
-   <h2> Stats For {{total_employees}} Employees</h2> 
+<div class="main">
+  <div class="main-inner">
+    <div class="container">
+      <div class="row">
+       <div class="span12">
+             <h2> Stats For {{total_employees}} Employees</h2> 
    {% include "search_bar.html" %}
  
   <table class="table table-striped">
@@ -86,7 +90,16 @@
   </table>
      <a class="btn btn-primary mb-2" href="/employee/dashboard/">Back</a>
 
+      </div>
+      </div>
+      <!-- /row --> 
+    </div>
+    <!-- /container --> 
+  </div>
+  <!-- /main-inner --> 
 </div>
-
-
+<!-- /main -->
 {% endblock %}
+
+
+

@@ -3,94 +3,29 @@
 <head>
   <title>{% block title %}Tangent Solutions{% endblock %}</title>
   {% load staticfiles%}
-    <script type="text/javascript" src="/assets/js/popper.min.js"></script>
-    <script type="text/javascript" src="/assets/js/jquery-3.1.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+<link href="/assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600"
+        rel="stylesheet">
+<link href="/assets/css/font-awesome.css" rel="stylesheet">
+<link href="/assets/css/style.css" rel="stylesheet">
+<link href="/assets/css/pages/dashboard.css" rel="stylesheet">
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-    
-     <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-
-  <script src="/assets/js/bootstrap.min.js"></script>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {font-family: Arial, Helvetica, sans-serif;}
-form {border: 3px solid #f1f1f1;}
-
-input[type=text], input[type=password] {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-}
-
-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-}
-
-button:hover {
-    opacity: 0.8;
-}
-
-.cancelbtn {
-    width: auto;
-    padding: 10px 18px;
-    background-color: #f44336;
-}
-
-.imgcontainer {
-    text-align: center;
-    margin: 24px 0 12px 0;
-}
-
-img.avatar {
-    width: 30%;
-    border-radius: 25%;
-}
-
-.container {
-    padding: 16px;
-}
-
-span.psw {
-    float: right;
-    padding-top: 16px;
-}
-
-/* Change styles for span and cancel button on extra small screens */
-@media screen and (max-width: 300px) {
-    span.psw {
-       display: block;
-       float: none;
-    }
-    .cancelbtn {
-       width: 100%;
-    }
-}
-</style>
 </head>
 
   <body>
+
  <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="/employee/dashboard">Tangent Solutions</a>
     </div>
-    <ul class="nav navbar-nav">
-    {%if 'authenticated' in request.session %}
-      <li><a href="/employee/dashboard/">Dashboard</a></li>
-      <li><a href="/employee/summary/">Employee Summary</a></li>
-
-    {% endif %}
-    </ul>
     <ul class="nav navbar-nav navbar-right">
        {%if 'authenticated' not in request.session %}
       <li><a href="#"><span class="glyphicon glyphicon-login"></span> Login</a></li>
@@ -102,12 +37,134 @@ span.psw {
     </ul>
   </div>
 </nav> 
+
+
+<!-- /navbar -->
+<div class="subnavbar">
+  <div class="subnavbar-inner">
+    <div class="container">
+      <ul class="mainnav">
+        <li class="active"><a href="/employee/dashboard/"><i class="icon-dashboard"></i><span>Dashboard</span> </a> </li>
+        <li><a href="/employee/review/"><i class="icon-list-alt"></i><span>Review</span> </a> </li>
+        <li><a href="/employee/summary/"><i class="icon-facetime-video"></i><span>Employee Summary</span> </a></li>
+        <li><a href="/employee/stats/"><i class="icon-bar-chart"></i><span>Stats</span> </a> </li>
+        <li><a href="/employee/details"><i class="icon-user"></i><span>View My Profile</span> </a> </li>
+      </ul>
+    </div>
+    <!-- /container --> 
+  </div>
+  <!-- /subnavbar-inner --> 
+</div>
+<!-- /subnavbar -->
 {% block content %}
   
 {% endblock %}
 
 {% block footer %}
+<div class="extra">
+  <div class="extra-inner">
+    <div class="container">
+      <div class="row">
+                    <div class="span3">
+                        <h4>
+                            Tangent Solutions</h4>
+                    </div>
+                    <!-- /span3 -->
+                </div>
+      <!-- /row --> 
+    </div>
+    <!-- /container --> 
+  </div>
+  <!-- /extra-inner --> 
+</div>
+<!-- /extra -->
+<div class="footer">
+  <div class="footer-inner">
+    <div class="container">
+      <div class="row">
+        <div class="span12"> &copy; 2018 <a href="#">Tangent Solutions</a>. </div>
+        <!-- /span12 --> 
+      </div>
+      <!-- /row --> 
+    </div>
+    <!-- /container --> 
+  </div>
+  <!-- /footer-inner --> 
+</div>
+<!-- /footer --> 
+<script src="/assets/js/jquery-1.7.2.min.js"></script> 
+<script src="/assets/js/excanvas.min.js"></script> 
+<script src="/assets/js/chart.min.js" type="text/javascript"></script> 
+<script src="/assets/js/bootstrap.js"></script>
+<script language="javascript" type="text/javascript" src="/assets/js/full-calendar/fullcalendar.min.js"></script>
+ 
+<script src="/assets/js/base.js"></script> 
+<script>     
 
+        var lineChartData = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [
+        {
+            fillColor: "rgba(220,220,220,0.5)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            data: [65, 59, 90, 81, 56, 55, 40]
+        },
+        {
+            fillColor: "rgba(151,187,205,0.5)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            data: [28, 48, 40, 19, 96, 27, 100]
+        }
+      ]
+
+        }
+        $(document).ready(function() {
+        {%if 'authenticated' in request.session %}
+
+          $.ajax({
+         type: 'GET',
+         url: '/ajax/employee-search/',
+         dataType: 'json',
+         success: function (data) {
+            $("#id_position").empty();
+            $('#id_position').append('<option data-tokens="" value=""> Select Position</option>')
+            $("#id_user").empty();
+            $('#id_user').append('<option data-tokens="" value=""> Select User</option>')
+            for (d in data){
+                var position = data[d]['position']
+                var user_data = data[d]['user_data']
+                for (p in position){
+                $('#id_position').append('<option value=' + position[p].id + '>'+ position[p].name +'</option>')
+                }
+                for (u in user_data){
+                $('#id_user').append('<option value=' + user_data[u].id + '>'+ user_data[u].name +'</option>')
+                }
+            }
+         },
+       });
+         {% endif %} 
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        var calendar = $('#calendar').fullCalendar({
+          header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+          },
+          selectable: false,
+          selectHelper: true,
+
+          editable: false,
+          events: [
+          ]
+        });
+      });
+    </script><!-- /Calendar -->
 {% endblock %}
 </body>
 </html>
