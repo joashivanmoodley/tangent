@@ -124,3 +124,4 @@ STATIC_ROOT = "%s/static" % MEDIA_ROOT
 STATIC_URL = '/static/'
 
 API_BASE_POINT = 'http://staging.tangent.tngnt.co'
+PDF_XLS_SERVICE_URL = 'http://localhost:8002'
