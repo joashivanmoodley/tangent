@@ -4,38 +4,91 @@
 {% block title %} Tangent Solutions - Employee Stats{% endblock %}
 
 {% block content %}
-{% include "search_bar.html" %}
 
-<div class="container dynamicTile">
-<div class="row ">
-    <div class="col-sm-3 col-xs-12">
-      <div id="tile1" class="tile">
-        <img src="/assets/image/employee.jpg" class="img-responsive"/>
-         <a href="/employee/summary/"><h2>View All {{total_employees}} Employee(s):  </h2></a>
-         
+<div class="main">
+  <div class="main-inner">
+    <div class="container">
+      <div class="row">
+       <div class="span12">
+      {% include "search_bar.html" %}
       </div>
-  </div>
-  <div class="col-sm-3 col-xs-7">
-    <div id="tile2" class="tile">
-       <img src="/assets/image/birthday.gif" class="img-responsive"/>
-         <a href="{% if total_birthdays_this_month > 0 %}/employee/birthday/{% else %}#{%  endif %}"><h2>Birthdays This Month: {{birthdays_this_month}} </h2></a>
-         
+        <div class="span12">
+          <div class="widget widget-nopad">
+            <!-- /widget-header -->
+            <div class="widget-content">
+              <div class="widget big-stats-container">
+                <div class="widget-content">
+                  <div id="big_stats" class="cf">
+                    <div class="stat"> <i>Total Employees:</i> <span class="value">{{total_employees}}</span> </div>
+                    <!-- .stat -->
+                    
+                    <div class="stat"> <i>Your Leave Days:</i> <span class="value">{{leave_remaining}}</span> </div>
+                    <!-- .stat -->
+                    
+                    <div class="stat"> <i >Your Next Review:</i> <span class="value">{{next_review}}</span> </div>
+                    <!-- .stat -->
+                    
+                    <div class="stat"> <i >Workaversary in </i> <span class="value">{{days_till_anni}} Days</span> </div>
+                    <!-- .stat --> 
+                  </div>
+                </div>
+                <!-- /widget-content --> 
+                
+              </div>
+            </div>
+            <br/>
+          <div class="widget">
+            <div class="widget-header"> <i class="icon-bookmark"></i>
+              <h3>Important Shortcuts</h3>
+            </div>
+             <br/>
+            <!-- /widget-header -->
+            <div class="widget-content">
+              <div class="shortcuts">
+               <br/>
+              <a href="/employee/review/" class="shortcut"><i class="shortcut-icon icon-list-alt"></i>
+              <span class="shortcut-label">Salary Reviews</span> </a>
+
+              <a href="/employee/stats/" class="shortcut"><i class="shortcut-icon icon-signal"></i> <span class="shortcut-label">Stats</span> </a>
+
+              <a href="/employee/summary/" class="shortcut"><i class="shortcut-icon icon-user"></i><span class="shortcut-label">Employees</span> </a>
+
+              <a href="{% if total_birthdays_this_month > 0 %}/employee/birthday/{% else %}#{%  endif %}" class="shortcut"> <i class="shortcut-icon icon-tag"></i><span class="shortcut-label">{{total_birthdays_this_month}} Birthdays This Month</span> </a></div>
+                                        
+
+
+
+
+              <!-- /shortcuts --> 
+            </div>
+            <!-- /widget-content --> 
+          </div>
+
+        </div>
+        <!-- /span6 --> 
+          <!-- /widget -->
+          <div class="widget widget-nopad">
+            <div class="widget-header"> <i class="icon-list-alt"></i>
+              <h3> Calandar</h3>
+            </div>
+            <!-- /widget-header -->
+            <div class="widget-content">
+              <div id='calendar'>
+              </div>
+            </div>
+            <!-- /widget-content --> 
+          </div>
+
+        </div>
+        
+      </div>
+      <!-- /row --> 
     </div>
+    <!-- /container --> 
   </div>
-  <div class="col-sm-3 col-xs-8">
-    <div id="tile2" class="tile">
-       <img src="/assets/image/review.jpg" class="img-responsive"/>
-         <a href="/employee/review/"><h2>View My Salary Review information:</h2></a>
-         
-    </div>
-  </div>
-  <div class="col-sm-3 col-xs-8">
-    <div id="tile2" class="tile">
-       <img src="/assets/image/position.png" class="img-responsive"/>
-        <a href="/employee/stats/"> <h2>Employee Stats </h2></a>
-         
-    </div>
-  </div>
+  <!-- /main-inner --> 
 </div>
-</div>
+<!-- /main -->
+
+
 {% endblock %}

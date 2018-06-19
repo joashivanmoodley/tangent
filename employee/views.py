@@ -6,7 +6,7 @@ from employee.forms import LoginForm
 from employee.functions import get_auth_token, set_search_url, login_check
 from django.views.generic import View
 from django.conf import settings
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 
@@ -159,6 +159,20 @@ class EmployeeDashView(View):
             if user_birthday_month == datetime.now().month:
                 self.birthdays_this_month = self.birthdays_this_month + 1
 
+        url = '%s/api/employee/me/' % (settings.API_BASE_POINT)
+        r = requests.get(
+            url,
+            headers=HEADERS
+        )
+        if r.status_code == 200:
+            emp_data = r.json()
+            self.template_vars['leave_remaining'] = emp_data['leave_remaining']
+            self.template_vars['next_review'] = emp_data['next_review']
+            anni_start_date_this_year = datetime.strptime(emp_data['start_date'], '%Y-%m-%d').replace(year=datetime.now().year)
+            days_till_anni = anni_start_date_this_year - datetime.now()+ timedelta(days=1)
+            if days_till_anni.days < 0:
+                days_till_anni = days_till_anni +  timedelta(days=365)
+            self.template_vars['days_till_anni'] = days_till_anni.days
         self.template_vars['total_employees'] = total_employees
         self.template_vars['birthdays_this_month'] = self.birthdays_this_month
         self.template_vars['position_data'] = self.position_data

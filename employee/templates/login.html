@@ -1,29 +1,96 @@
-{% extends "base.html" %}
-{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+    <meta charset="utf-8">
+    <title>Login - Tangent Solutions</title>
 
-{% block title %} Tangent Solutions - Login{% endblock %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes"> 
+    
+<link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="/assets/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" />
 
-{% block content %}
-<form action="{% url 'login' %}" method="POST">
-{% csrf_token %}
-  <div class="imgcontainer">
-    <img src="/assets/image/tangent-logo.png" alt="tangent solutions" class="avatar">
+<link href="/assets/css/font-awesome.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet">
+    
+<link href="/assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="/assets/css/pages/signin.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+   <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/employee/dashboard">Tangent Solutions</a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+       {%if 'authenticated' not in request.session %}
+      <li><a href="#"><span class="glyphicon glyphicon-login"></span> Login</a></li>
+      {% else %}
+            <li><a href="/employee/details/"><span class="glyphicon glyphicon-sign-up"></span> View My Account</a></li>
+            <li><a href="/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+      {% endif %}
+
+    </ul>
   </div>
+</nav>
 
-  <div class="container">
-    <label for="uname"><b>Username</b></label>
-
-    {{ form.username }}
-
-    <label for="psw"><b>Password</b></label>
-    {{ form.password }}
+<div class="account-container">
+  
+  <div class="content clearfix">
+    
+    <form action="{% url 'login' %}" method="POST">
+    {% csrf_token %}
+      <h1>Employee Login</h1>   
+      
+      <div class="login-fields">
         
-    <button type="submit">Login</button>
-    {% if 'invalid_login' in request.session %}
-        <label style="color:Red">Invalid login please try again.</label>
+        <p>Please Enter Your username and password.</p>
+        {% if 'invalid_login' in request.session %}
+            <label style="color:Red">Invalid login please try again.</label>
 
-    {% endif %}
-  </div>
-</form>
+        {% endif %}
+        <div class="field">
+          <label for="username">Username</label>
+          {{ form.username }}
+        </div> <!-- /field -->
+        
+        <div class="field">
+          <label for="password">Password:</label>
+          {{ form.password }}
+        </div> <!-- /password -->
+        
+      </div> <!-- /login-fields -->
+      
+      <div class="login-actions">
+        
+                  
+        <button class="button btn btn-success btn-large">Sign In</button>
+        
+      </div> <!-- .actions -->
+      
+      
+      
+    </form>
+    
+  </div> <!-- /content -->
+  
+</div> <!-- /account-container -->
 
-{% endblock %}
+
+
+
+<script src="/assets/js/jquery-1.7.2.min.js"></script>
+<script src="/assets/js/bootstrap.js"></script>
+
+<script src="/assets/js/signin.js"></script>
+
+</body>
+
+</html>
+
+
+
+

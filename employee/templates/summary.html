@@ -1,15 +1,21 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Tangent Solutions - Summary{% endblock %}
+{% block title %} Tangent Solutions - Employee Stats{% endblock %}
 
 {% block content %}
 
-<div class="container">
-   <h2>Employee Summary View</h2> 
-   {% include "search_bar.html" %}
- 
-  <table class="table table-striped">
+<div class="main">
+  <div class="main-inner">
+    <div class="container">
+      <div class="row">
+       <div class="span12">
+      {% include "search_bar.html" %}
+
+      </div>
+      <div class="span12">
+           <h2>Employee Summary View</h2> 
+   <table class="table table-striped">
     <thead>
       <tr>
         <th>Firstname</th>
@@ -35,9 +41,45 @@
      <a class="btn btn-primary mb-2" data-toggle="modal" data-target="#modalemail">Download</a>
 
 
+      </div>  
+        <div class="modal fade" id="modalemail" tabindex="-1" role="dialog" aria-labelledby="modalemail" aria-hidden="true">
+    <div class="modal-dialog cascading-modal modal-avatar modal-sm" role="document">
+        <div class="modal-content">
+            <form name="download_form" id="download_form" method="POST" action="/download/">
+            {% csrf_token %}
+            <div class="modal-body text-center mb-1">
+                <div class="md-form ml-0 mr-0">
+                    <select name="download_type" id="id_download_type">
+                       <option value="">Download Type</option>
+                      <option value="pdf">PDF</option>
+                      <option value="xls">XLS</option>
+                    </select>
+                </div>
+                <div class="md-form ml-0 mr-0">
+                    <input type="email" name="email" id="email" class="form-control form-control-sm validate ml-0">
+                    <label data-error="wrong" data-success="right" for="form29" class="ml-0">Enter Email</label>
+                </div>
+               <input type="hidden" name="section" id="id_section" value="summary">
 
+                <div class="text-center mt-4">
+                    <button class="btn btn-cyan mt-1">OK</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
 </div>
+      </div>
+      <!-- /row --> 
+    </div>
+    <!-- /container --> 
+  </div>
+  <!-- /main-inner --> 
+</div>
+<!-- /main -->
+<script src="/assets/js/jquery-3.1.1.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.0-rc.2/jquery-ui.min.js"></script>
+
 
 <script type="text/javascript">
 var download_form = $("#download_form");
@@ -66,33 +108,5 @@ $(function() {
 });
 
 </script>
-
-
-<div class="modal fade" id="modalemail" tabindex="-1" role="dialog" aria-labelledby="modalemail" aria-hidden="true">
-    <div class="modal-dialog cascading-modal modal-avatar modal-sm" role="document">
-        <div class="modal-content">
-            <form name="download_form" id="download_form" method="POST" action="/download/">
-            {% csrf_token %}
-            <div class="modal-body text-center mb-1">
-                <div class="md-form ml-0 mr-0">
-                    <select name="download_type" id="id_download_type">
-                       <option value="">Download Type</option>
-                      <option value="pdf">PDF</option>
-                      <option value="xls">XLS</option>
-                    </select>
-                </div>
-                <div class="md-form ml-0 mr-0">
-                    <input type="email" name="email" id="email" class="form-control form-control-sm validate ml-0">
-                    <label data-error="wrong" data-success="right" for="form29" class="ml-0">Enter Email</label>
-                </div>
-               <input type="hidden" name="section" id="id_section" value="summary">
-
-                <div class="text-center mt-4">
-                    <button class="btn btn-cyan mt-1">OK</button>
-                </div>
-            </div>
-            </form>
-        </div>
-    </div>
-</div>
 {% endblock %}
+
