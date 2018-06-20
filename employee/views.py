@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
 from employee.forms import LoginForm
-from employee.functions import get_auth_token, set_search_url, login_check
+from employee.functions import get_auth_token, set_search_url
+from employee.functions import get_stats, login_check
 from django.views.generic import View
 from django.conf import settings
 from datetime import datetime, timedelta
@@ -167,7 +168,11 @@ class EmployeeDashView(View):
         if r.status_code == 200:
             emp_data = r.json()
             self.template_vars['leave_remaining'] = emp_data['leave_remaining']
-            self.template_vars['next_review'] = emp_data['next_review']
+
+            if datetime.strptime(emp_data['next_review'], '%Y-%m-%d')  > datetime.now(): 
+                self.template_vars['next_review'] = emp_data['next_review']
+            else:
+                self.template_vars['next_review'] = 'No Reviews Scheduled'
             anni_start_date_this_year = datetime.strptime(emp_data['start_date'], '%Y-%m-%d').replace(year=datetime.now().year)
             days_till_anni = anni_start_date_this_year - datetime.now()+ timedelta(days=1)
             if days_till_anni.days < 0:
@@ -237,8 +242,7 @@ class EmployeeStatsView(View):
     data = None
 
     def get(self, request, *args, **kwargs):
-        self.position_data = {}
-        self.gender_data = {'male': 0, 'female': 0}
+        
         HEADERS = {'Authorization': 'Token %s' % request.session['auth_token']}
         r = requests.get(
             '%s/api/employee/' % (settings.API_BASE_POINT),
@@ -249,64 +253,15 @@ class EmployeeStatsView(View):
 
         total_employees = len(self.data)
         self.template_vars['data'] = self.data
-        self.race_data = {'B': 0, 'C': 0, 'I': 0, 'W': 0, 'N': 0}
-        self.employee_data = {
-            'most_recent':  {'name': '', 'value': 0, 'id': None},
-            'longest':  {'name': '', 'value': 0, 'id': None},
-            'youngest':  {'name': '', 'value': 0, 'id': None},
-            'oldest':  {'name': '', 'value': 0, 'id': None},
-        }
+        
 
-        for d in self.data:
-
-            if d['gender'] == 'M':
-                self.gender_data['male'] += 1
-            else:
-                self.gender_data['female'] += 1
-
-            self.race_data[d['race']] += 1
-
-            if d['years_worked'] > self.employee_data['longest']['value'] or self.employee_data['longest']['value'] == 0:
-                self.employee_data['longest']['name'] = '%s %s' % (d['user']['first_name'], d['user']['last_name'])
-                self.employee_data['longest']['value'] = d['years_worked']
-                self.employee_data['longest']['id'] = d['user']['id']
-
-            if d['years_worked'] < self.employee_data['most_recent']['value'] or self.employee_data['most_recent']['value'] == 0:
-                self.employee_data['most_recent']['name'] = '%s %s' % (d['user']['first_name'], d['user']['last_name'])
-                self.employee_data['most_recent']['value'] = d['years_worked']
-                self.employee_data['most_recent']['id'] = d['user']['id']
-
-            if d['age'] < self.employee_data['youngest']['value'] or self.employee_data['youngest']['value'] == 0:
-                self.employee_data['youngest']['name'] = '%s %s' % (d['user']['first_name'], d['user']['last_name'])
-                self.employee_data['youngest']['value'] = d['age']
-                self.employee_data['youngest']['id'] = d['user']['id']
-
-            if d['age'] > self.employee_data['oldest']['value'] or self.employee_data['oldest']['value'] == 0:
-                self.employee_data['oldest']['name'] = '%s %s' % (d['user']['first_name'], d['user']['last_name'])
-                self.employee_data['oldest']['value'] = d['age']
-                self.employee_data['oldest']['id'] = d['user']['id']
-
-            # gets a list of positions and their respective counts
-            if d['position']['name'] not in self.position_data.keys():
-                if d['position']['level'] == 'Junior':
-                    self.position_data.update({
-                        d['position']['name']: {d['position']['level']: 1, 'Senior': 0}
-                    })
-                else:
-                    self.position_data.update({
-                        d['position']['name']: {d['position']['level']: 1, 'Junior': 0}
-                    })
-            else:
-                if d['position']['level'] not in self.position_data[d['position']['name']].keys():
-                    self.position_data[d['position']['name']][d['position']['level']] = 1
-                else:
-                    self.position_data[d['position']['name']][d['position']['level']] += 1
-        self.template_vars['gender_data'] = self.gender_data
+        gender_data, position_data, race_data, employee_data = get_stats(self.data)
+        self.template_vars['gender_data'] = gender_data
         self.template_vars['total_employees'] = total_employees
-        self.template_vars['position_data'] = self.position_data
-        self.template_vars['race_data'] = self.race_data
+        self.template_vars['position_data'] = position_data
+        self.template_vars['race_data'] = race_data
         self.template_vars['month'] = datetime.now().month
-        self.template_vars['employee_data'] = self.employee_data
+        self.template_vars['employee_data'] = employee_data
         return render(request, 'employee_stats.html', self.template_vars)
 
 employee_stats = login_check(EmployeeStatsView.as_view())
