@@ -5,10 +5,11 @@
 
 {% block content %}
 
-<div class="container">
-   <h2>Employee Birthdays This Month</h2> 
+<div class="main">  
+ <h2>Employee Birthdays This Month</h2> 
    {% include "search_bar.html" %}
- 
+ <div class="widget-content">
+
   <table class="table table-striped">
     <thead>
       <tr>
@@ -31,6 +32,7 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 
 
