@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>{% block title %}Tangent Solutions{% endblock %}</title>
-  {% load staticfiles%}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="utf-8">
+<title>Tangent Solutions</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
 <link href="/assets/css/bootstrap-responsive.min.css" rel="stylesheet">
@@ -16,29 +16,33 @@
 <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
 </head>
+<body>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span
+                    class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span> </a><a class="brand" href="index.html">Tangent Solutions </a>
+      <div class="nav-collapse">
+        <ul class="nav pull-right">
 
-  <body>
-
- <nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="/employee/dashboard">Tangent Solutions</a>
+          <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                            class="icon-user"></i> Account <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/employee/details/"> My Profile</a></li>
+              <li><a href="/logout/">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+        <form class="navbar-search pull-right">
+          <input type="text" class="search-query" placeholder="Search">
+        </form>
+      </div>
+      <!--/.nav-collapse --> 
     </div>
-    <ul class="nav navbar-nav navbar-right">
-       {%if 'authenticated' not in request.session %}
-      <li><a href="#"><span class="glyphicon glyphicon-login"></span> Login</a></li>
-      {% else %}
-            <li><a href="/employee/details/"><span class="glyphicon glyphicon-sign-up"></span> View My Account</a></li>
-            <li><a href="/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-      {% endif %}
-
-    </ul>
+    <!-- /container --> 
   </div>
-</nav> 
-
-
+  <!-- /navbar-inner --> 
+</div>
 <!-- /navbar -->
 <div class="subnavbar">
   <div class="subnavbar-inner">
@@ -56,11 +60,15 @@
   <!-- /subnavbar-inner --> 
 </div>
 <!-- /subnavbar -->
-{% block content %}
+<div class="main">
+  <div class="main-inner">
+    <div class="container">
+      <div class="row">
+          
+      {% block content %}
   
-{% endblock %}
-
-{% block footer %}
+        {% endblock %}
+      {% block footer %}
 <div class="extra">
   <div class="extra-inner">
     <div class="container">
@@ -168,3 +176,4 @@
 {% endblock %}
 </body>
 </html>
+

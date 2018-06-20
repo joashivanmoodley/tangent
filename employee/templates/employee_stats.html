@@ -6,14 +6,11 @@
 {% block content %}
 
 <div class="main">
-  <div class="main-inner">
-    <div class="container">
-      <div class="row">
-       <div class="span12">
              <h2> Stats For {{total_employees}} Employees</h2> 
    {% include "search_bar.html" %}
- 
-  <table class="table table-striped">
+ <div class="widget-content">
+
+  <table class="table table-striped table-bordered">
     <thead>
       <tr>
         <th>Title</th>
@@ -33,8 +30,10 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+<div class="widget-content">
 
-  <table class="table table-striped">
+  <table class="table table-striped table-bordered">
     <thead>
       <tr>
         <th>No. Of Males Employed</th>
@@ -48,8 +47,10 @@
       </tr>
     </tbody>
   </table>
+</div>
+<div class="widget-content">
 
-  <table class="table table-striped">
+  <table class="table table-striped table-bordered">
     <thead>
       <tr>
         <th>No. Of Black Employees</th>
@@ -69,7 +70,10 @@
       </tr>
     </tbody>
   </table>
-  <table class="table table-striped">
+</div>
+<div class="widget-content">
+
+  <table class="table table-striped table-bordered">
     <thead>
       <tr>
         <th>Most Recent Employed</th>
@@ -88,15 +92,11 @@
       </tr>
     </tbody>
   </table>
+</div>
      <a class="btn btn-primary mb-2" href="/employee/dashboard/">Back</a>
 
-      </div>
-      </div>
-      <!-- /row --> 
-    </div>
-    <!-- /container --> 
-  </div>
-  <!-- /main-inner --> 
+
+
 </div>
 <!-- /main -->
 {% endblock %}

@@ -6,46 +6,44 @@
 {% block content %}
 
 <div class="main">
-  <div class="main-inner">
-    <div class="container">
-      <div class="row">
-       <div class="span12">
-      {% include "search_bar.html" %}
-         <form class="form-horizontal">
- <div class="form-group">
-   <label class="control-label col-sm-6" for="text">Review Information</label>          
 
- </div>
- <div class="form-group">
-    {% for d in data %}
-    <label class="control-label col-sm-2" for="text">date:</label>
-    <div class="col-sm-10">
-      <input type="text" class="form-control"  placeholder="{{d.date}}"  readonly>
-    </div>
-    <label class="control-label col-sm-2" for="text">salary:</label>
-    <div class="col-sm-10">
-      <input type="text" class="form-control"  placeholder="{{d.salary}}"  readonly>
-    </div>
-    <label class="control-label col-sm-2" for="text">type:</label>
-    <div class="col-sm-10">
-      <input type="text" class="form-control"  placeholder="{% if d.type == 'P' %} Performance Increase{% elif  d.type == 'A' %}Annual Increase{% elif  d.type == 'S' %}Starting Salary{% elif  d.type == 'E' %}Expectation Review{% endif %}"  readonly>
-    </div>
-    <div class="form-group"></div>
-    {% endfor %}
-   
-</form>
-       <a class="btn btn-primary mb-2" href="/employee/dashboard/">Back</a>
+        {% include "search_bar.html" %}
+<div class="widget-content">
 
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th> Your Review Information </th>
+                    <th class="td-actions"> </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for d in data %}
+                  <tr>
+                    <td> Date</td>
+                    <td> {{d.date}} </td>
+                  </tr>
+                  <tr>
+                    <td> Salary </td>
+                    <td> {{d.salary}} </td>
+                  </tr>
+                  <tr>
+                    <td> Type </td>
+                    <td> {% if d.type == 'P' %} Performance Increase{% elif  d.type == 'A' %}Annual Increase{% elif  d.type == 'S' %}Starting Salary{% elif  d.type == 'E' %}Expectation Review{% endif %} </td>
+                  </tr>
+                  <tr>
+                  <td></td><td></td>
+                  </tr>
+                {% endfor %}
+                
+                </tbody>
+              </table>
+              <a class="btn btn-primary mb-2" href="/employee/dashboard/">Back</a>
+            </div>
 
-      </div>
-      </div>
-      <!-- /row --> 
-    </div>
-    <!-- /container --> 
-  </div>
-  <!-- /main-inner --> 
 </div>
 <!-- /main -->
+
 {% endblock %}
 
 

@@ -20,22 +20,36 @@
 </head>
 
 <body>
-   <nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="/employee/dashboard">Tangent Solutions</a>
-    </div>
-    <ul class="nav navbar-nav navbar-right">
-       {%if 'authenticated' not in request.session %}
-      <li><a href="#"><span class="glyphicon glyphicon-login"></span> Login</a></li>
-      {% else %}
-            <li><a href="/employee/details/"><span class="glyphicon glyphicon-sign-up"></span> View My Account</a></li>
-            <li><a href="/logout/"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-      {% endif %}
+  
+  <div class="navbar navbar-fixed-top">
+  
+  <div class="navbar-inner">
+    
+    <div class="container">
+      
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      
+      <a class="brand" href="index.html">
+        Tangent Solutions        
+      </a>    
+      
+      <div class="nav-collapse">
+        <ul class="nav pull-right">
+        </ul>
+        
+      </div><!--/.nav-collapse -->  
+  
+    </div> <!-- /container -->
+    
+  </div> <!-- /navbar-inner -->
+  
+</div> <!-- /navbar -->
 
-    </ul>
-  </div>
-</nav>
+
 
 <div class="account-container">
   
@@ -80,8 +94,6 @@
 </div> <!-- /account-container -->
 
 
-
-
 <script src="/assets/js/jquery-1.7.2.min.js"></script>
 <script src="/assets/js/bootstrap.js"></script>
 
@@ -90,6 +102,7 @@
 </body>
 
 </html>
+
 
 
 
