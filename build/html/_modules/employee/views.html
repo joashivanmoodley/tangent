@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>employee.views &mdash; Tangent 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Tangent 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Tangent 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for employee.views</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span>
+<span class="kn">from</span> <span class="nn">employee.forms</span> <span class="kn">import</span> <span class="n">LoginForm</span>
+<span class="kn">from</span> <span class="nn">employee.functions</span> <span class="kn">import</span> <span class="n">get_auth_token</span><span class="p">,</span> <span class="n">set_search_url</span>
+<span class="kn">from</span> <span class="nn">employee.functions</span> <span class="kn">import</span> <span class="n">get_stats</span><span class="p">,</span> <span class="n">login_check</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">View</span>
+<span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+
+<div class="viewcode-block" id="Login"><a class="viewcode-back" href="../../employee.html#employee.views.Login">[docs]</a><span class="k">class</span> <span class="nc">Login</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Home Page Prompting the user for login details</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_vars</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Login.get"><a class="viewcode-back" href="../../employee.html#employee.views.Login.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">LoginForm</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;login.html&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Login.post"><a class="viewcode-back" href="../../employee.html#employee.views.Login.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="n">form</span> <span class="o">=</span> <span class="n">LoginForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">form_data</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span>
+            <span class="n">auth_token</span> <span class="o">=</span> <span class="n">get_auth_token</span><span class="p">(</span><span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">],</span> <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">auth_token</span><span class="p">:</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;authenticated&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">auth_token</span>
+                <span class="k">if</span> <span class="s1">&#39;invalid_login&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;invalid_login&#39;</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;employee_dashboard&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;authenticated&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;authenticated&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s1">&#39;auth_token&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;invalid_login&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="SummaryView"><a class="viewcode-back" href="../../employee.html#employee.views.SummaryView">[docs]</a><span class="k">class</span> <span class="nc">SummaryView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view is designed to display all employee data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_vars</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+<div class="viewcode-block" id="SummaryView.get"><a class="viewcode-back" href="../../employee.html#employee.views.SummaryView.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Token </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/employee/&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;summary.html&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SummaryView.post"><a class="viewcode-back" href="../../employee.html#employee.views.SummaryView.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># this handles the search for employees</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">set_search_url</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Token </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]}</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">set_search_url</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/employee/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">,</span> <span class="n">url</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;summary.html&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">)</span>
+</div></div>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">login_check</span><span class="p">(</span><span class="n">SummaryView</span><span class="o">.</span><span class="n">as_view</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="DetailsView"><a class="viewcode-back" href="../../employee.html#employee.views.DetailsView">[docs]</a><span class="k">class</span> <span class="nc">DetailsView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Details view of employee it. If theres an id in kwargs then its for another user.</span>
+<span class="sd">    If there is not an id in kwargs then the logined users details will be displayed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">full_profile</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">template_vars</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="DetailsView.get"><a class="viewcode-back" href="../../employee.html#employee.views.DetailsView.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Token </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]}</span>
+        <span class="k">if</span> <span class="s1">&#39;id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/employee/me/&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">full_profile</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/employee/?user=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;summary&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;id_number&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_profile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;details.html&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;super_user_details.html&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">)</span>
+</div></div>
+<span class="n">details</span> <span class="o">=</span> <span class="n">login_check</span><span class="p">(</span><span class="n">DetailsView</span><span class="o">.</span><span class="n">as_view</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="logout"><a class="viewcode-back" href="../../employee.html#employee.views.logout">[docs]</a><span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;authenticated&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;authenticated&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;auth_token&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="EmployeeDashView"><a class="viewcode-back" href="../../employee.html#employee.views.EmployeeDashView">[docs]</a><span class="k">class</span> <span class="nc">EmployeeDashView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the first view the user is directed to after login, and displays some basic stats</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">template_vars</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">position_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">birthdays_this_month</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="EmployeeDashView.get"><a class="viewcode-back" href="../../employee.html#employee.views.EmployeeDashView.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Token </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/employee/&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">total_employees</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">position_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">])</span>
+            <span class="n">user_birthday_month</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;birth_date&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">month</span>
+            <span class="k">if</span> <span class="n">user_birthday_month</span> <span class="o">==</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">birthdays_this_month</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">birthdays_this_month</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/employee/me/&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="n">emp_data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;leave_remaining&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">emp_data</span><span class="p">[</span><span class="s1">&#39;leave_remaining&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">emp_data</span><span class="p">[</span><span class="s1">&#39;next_review&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="o">&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">():</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;next_review&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">emp_data</span><span class="p">[</span><span class="s1">&#39;next_review&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;next_review&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;No Reviews Scheduled&#39;</span>
+            <span class="n">anni_start_date_this_year</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">emp_data</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+            <span class="n">days_till_anni</span> <span class="o">=</span> <span class="n">anni_start_date_this_year</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">days_till_anni</span><span class="o">.</span><span class="n">days</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">days_till_anni</span> <span class="o">=</span> <span class="n">days_till_anni</span> <span class="o">+</span>  <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">365</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;days_till_anni&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">days_till_anni</span><span class="o">.</span><span class="n">days</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;total_employees&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_employees</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;birthdays_this_month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">birthdays_this_month</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;position_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;employee_dashboard.html&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">)</span>
+</div></div>
+<span class="n">employee_dashboard</span> <span class="o">=</span> <span class="n">login_check</span><span class="p">(</span><span class="n">EmployeeDashView</span><span class="o">.</span><span class="n">as_view</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="BirthdayView"><a class="viewcode-back" href="../../employee.html#employee.views.BirthdayView">[docs]</a><span class="k">class</span> <span class="nc">BirthdayView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays info of birthdays in the month.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">template_vars</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="BirthdayView.get"><a class="viewcode-back" href="../../employee.html#employee.views.BirthdayView.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Token </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/employee/?birth_date_range=3&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;birthday.html&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">)</span>
+</div></div>
+<span class="n">birthday</span> <span class="o">=</span> <span class="n">login_check</span><span class="p">(</span><span class="n">BirthdayView</span><span class="o">.</span><span class="n">as_view</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="ReviewView"><a class="viewcode-back" href="../../employee.html#employee.views.ReviewView">[docs]</a><span class="k">class</span> <span class="nc">ReviewView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays info of logined users reviews.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_vars</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="ReviewView.get"><a class="viewcode-back" href="../../employee.html#employee.views.ReviewView.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Token </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/review/&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;review.html&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">)</span>
+</div></div>
+<span class="n">review</span> <span class="o">=</span> <span class="n">login_check</span><span class="p">(</span><span class="n">ReviewView</span><span class="o">.</span><span class="n">as_view</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="EmployeeStatsView"><a class="viewcode-back" href="../../employee.html#employee.views.EmployeeStatsView">[docs]</a><span class="k">class</span> <span class="nc">EmployeeStatsView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays company position info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_vars</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="EmployeeStatsView.get"><a class="viewcode-back" href="../../employee.html#employee.views.EmployeeStatsView.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        
+        <span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Token </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s1">&#39;auth_token&#39;</span><span class="p">]}</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/api/employee/&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">API_BASE_POINT</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="n">total_employees</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        
+
+        <span class="n">gender_data</span><span class="p">,</span> <span class="n">position_data</span><span class="p">,</span> <span class="n">race_data</span><span class="p">,</span> <span class="n">employee_data</span> <span class="o">=</span> <span class="n">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;gender_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gender_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;total_employees&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_employees</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;position_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">position_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;race_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">race_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">[</span><span class="s1">&#39;employee_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">employee_data</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;employee_stats.html&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_vars</span><span class="p">)</span>
+</div></div>
+<span class="n">employee_stats</span> <span class="o">=</span> <span class="n">login_check</span><span class="p">(</span><span class="n">EmployeeStatsView</span><span class="o">.</span><span class="n">as_view</span><span class="p">())</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Tangent 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Joash Moodley.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

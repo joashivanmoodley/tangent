@@ -7,9 +7,9 @@ from django.template import RequestContext, loader
 
 
 def search_filter(request):
-    '''
+    """
     Populates the search bar dropdowns
-    '''
+    """
 
     data = None
     position_data = []
@@ -47,9 +47,9 @@ def search_filter(request):
 
 
 def request_download(request):
-    '''
+    """
     Sends data to micoservice to process.
-    '''
+    """
     if request.POST:
         section = request.POST.get('section', None)
         download_type = request.POST.get('download_type', None)

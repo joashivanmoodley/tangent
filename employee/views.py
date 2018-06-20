@@ -13,9 +13,9 @@ import requests
 
 
 class Login(View):
-    '''
+    """
     Home Page Prompting the user for login details
-    '''
+    """
     template_vars = {}
 
     def get(self, request, *args, **kwargs):
@@ -46,9 +46,9 @@ class Login(View):
 
 
 class SummaryView(View):
-    '''
+    """
     This view is designed to display all employee data
-    '''
+    """
     template_vars = {}
     url = ''
 
@@ -82,10 +82,10 @@ summary = login_check(SummaryView.as_view())
 
 
 class DetailsView(View):
-    '''
+    """
     Details view of employee it. If theres an id in kwargs then its for another user.
     If there is not an id in kwargs then the logined users details will be displayed.
-    '''
+    """
 
     full_profile = False
     data = None
@@ -134,9 +134,9 @@ def logout(request):
 
 
 class EmployeeDashView(View):
-    '''
+    """
     This is the first view the user is directed to after login, and displays some basic stats
-    '''
+    """
 
     template_vars = {}
     data = None
@@ -188,9 +188,9 @@ employee_dashboard = login_check(EmployeeDashView.as_view())
 
 
 class BirthdayView(View):
-    '''
+    """
     Displays info of birthdays in the month.
-    '''
+    """
 
     template_vars = {}
     data = None
@@ -212,9 +212,9 @@ birthday = login_check(BirthdayView.as_view())
 
 
 class ReviewView(View):
-    '''
+    """
     Displays info of logined users reviews.
-    '''
+    """
     template_vars = {}
     data = None
 
@@ -235,9 +235,9 @@ review = login_check(ReviewView.as_view())
 
 
 class EmployeeStatsView(View):
-    '''
+    """
     Displays company position info.
-    '''
+    """
     template_vars = {}
     data = None
 

@@ -20,10 +20,10 @@ class Test(TestCase):
         self.browser.quit()
 
     def test_auth_success(self):
-        '''
+        """
         User comes to the home page tries to Login
         User enters the correct login details and is then redirected to the dashboard page.
-        '''
+        """
         request = self.factory.get(resolve('/'))
         response = Login.as_view()(request)
         self.assertEqual(response.status_code, 200)
@@ -37,10 +37,10 @@ class Test(TestCase):
         self.assertEqual(response.url, '/employee/dashboard/')
 
     def test_auth_fail(self):
-        '''
+        """
         User comes to the home page tries to Login
         User enters the incorrect login details and is then redirected to the login page.
-        '''
+        """
         request = self.factory.get(resolve('/'))
         response = Login.as_view()(request)
         self.assertEqual(response.status_code, 200)
